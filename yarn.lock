@@ -1352,6 +1352,11 @@ time-span@4.0.0:
   dependencies:
     convert-hrtime "^3.0.0"
 
+tiny-json-http@^7.4.2:
+  version "7.4.2"
+  resolved "https://registry.yarnpkg.com/tiny-json-http/-/tiny-json-http-7.4.2.tgz#2948d7a7f650d69df65f10982f126b5c5520ce3d"
+  integrity sha512-+3ns4PfQTLaF69zGASkAfDoOEVmwYTXSDrU6VR93h317uFOW7evFzKa7Ih9JzPHiYSee3lUXHLAGhws2wFSexQ==
+
 to-regex-range@^5.0.1:
   version "5.0.1"
   resolved "https://registry.yarnpkg.com/to-regex-range/-/to-regex-range-5.0.1.tgz#1648c44aae7c8d988a326018ed72f5b4dd0392e4"

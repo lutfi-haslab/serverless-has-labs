@@ -4,7 +4,7 @@ import { MongoClient } from "mongodb";
 
 const url = process.env.DATABASE_MONGO;
 const client = new MongoClient(url);
-const dbName = 'dev';
+const dbName = 'blockchain';
 const db = client.db(dbName);
 
 const handleQuerySort = (query: any) => {
@@ -80,7 +80,19 @@ apiRoute.get<{
   }
 });
 
-
+apiRoute.post<{
+  query: {
+    name: string
+  }
+}>(async (req, res) => {
+  const { name } = req.query;
+  try {
+    const user = await db.collection(name).insertOne(req.body)
+    return res.json(user)
+  } catch (err) {
+    console.log(err)
+  }
+});
 
 main()
 export default apiRoute;

@@ -1,10 +1,18 @@
-import 'dotenv/config'
-import Fastify, { FastifyRequest, FastifyReply } from 'fastify';
-import { main, devDb, handleSortQuery, ObjectId } from "./config/db"
-import { VM, NodeVM, VMScript } from 'vm2'
+// NPM Modules
+import 'dotenv/config';
+import Fastify, { FastifyReply, FastifyRequest } from 'fastify';
+import socketioServer from 'fastify-socket.io';
+import { join } from 'path';
+import { NodeVM, VMScript } from 'vm2';
+import { devDb, handleSortQuery, main, ObjectId } from "./config/db";
+const { readFile } = require('fs').promises
 
+// Custom
+import { ConsumeMessageInfo, ConsumeMessageWarningAndError } from './amqp/consumer';
+import { Producer } from './amqp/producer';
 import { checkValidation } from './config/schemaValidation';
 
+const producer = new Producer();
 // VM2 Instance
 const vm = new NodeVM({
   allowAsync: true,
@@ -15,9 +23,31 @@ const vm = new NodeVM({
 // Fastify Instance
 const PORT: number = 3000;
 const HOST: string = "0.0.0.0" || "localhost";
+
 const app = Fastify({
   logger: true,
 });
+app.register(socketioServer).ready(err => {
+  if (err) throw err
+  app.io.on('connection', (socket) => {
+    console.log('a user connected');
+  
+    socket.on('chat message', (msg) => {
+      console.log('message: ' + msg);
+      app.io.emit('chat message', msg);
+    });
+  
+    socket.on('disconnect', () => {
+      console.log('user disconnected');
+    });
+  });
+})
+
+app.get('/test', async (req, res) => {
+  const data = await readFile(join(__dirname, '/index.html'))
+  res.header('content-type', 'text/html; charset=utf-8')
+  res.send(data)
+})
 
 // @GET ALL COLLECTION
 // localhost:3000/v1/api/record?name=user
@@ -34,6 +64,16 @@ app.get("/v1/api/record", async (req: FastifyRequest<{
   } catch (err) {
     return res.send(err)
   }
+});
+
+app.post("/v1/api/sendLog", async (req: FastifyRequest<{
+  Body: {
+    logType: string,
+    message: string
+  }
+}>, res) => {
+	const data = await producer.publishMessage(req.body.logType, req.body.message);
+	res.send(data);
 });
 
 // @GET COLLECTION BY ID TO GET FUNCTION
@@ -188,18 +228,32 @@ app.post("/v1/api/user/:idUser/record/:collectionName/:id", async (req: FastifyR
   }
 });
 
+app.ready().then(() => {
+  app.io.on("connection", (socket) => {
+    console.log("user connected" + socket.id);
+    socket.on("message", (data) => {
+      console.log(data);
+    });
+  });
+});
+
 /**
  * Run the server!
  */
 
 const start = async () => {
   try {
+    
     await app.listen({ port: PORT, host: HOST });
   } catch (err) {
     app.log.error(err);
     process.exit(1);
   }
 };
+
+// Amqp
+ConsumeMessageInfo();
+ConsumeMessageWarningAndError();
 // Databases
 main();
 // Fastify

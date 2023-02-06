@@ -3,6 +3,7 @@ import { VercelRequest, VercelResponse } from "@vercel/node";
 import nextConnect from 'next-connect';
 import tiny from "tiny-json-http"
 
+
 const prisma = new PrismaClient();
 
 type Data = {
@@ -70,6 +71,15 @@ const dataJson: Data[] = [
     bodyFn: `
     const user = await tiny.get({url: 'https://jsonplaceholder.typicode.com/todos/1'})
     return user.body
+  `
+  },
+  {
+    id: 5,
+    method: "GET",
+    bodyFn: `
+    const axios = require('axios');
+    const user = await axios.get('https://jsonplaceholder.typicode.com/todos/1')
+    return user
   `
   },
 ];

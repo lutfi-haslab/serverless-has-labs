@@ -45,39 +45,25 @@ const apiRoute = nextConnect({
 
 apiRoute.get<{
   query: {
-    name: string
+    record: string
   }
 }>(async (req, res) => {
-  const { name, query, sort, limit, skip, ...rest } = req.query;
-  // localhost:3000/api/db/record?name=user
-  if (query == "record") {
-    try {
-      const user = await db.collection(name).find({}).toArray()
-      return res.json(user)
-    } catch (err) {
-      return res.json(err)
-    }
-  }
-  else if (query == "db") {
-    return res.json({
-      path: "db"
-    })
-  } else
+  const { record, query, sort, limit, skip, ...rest } = req.query;
   // localhost:3000/api/db/query?name=Lutfi&sort=_id:-1&limit=1&skip=1
-  {
-    const options = {
-      sort: handleQuerySort(sort), //localhost:3000/mongo/2?sort=_id:-1
-      limit: Number(limit),
-      skip: Number(skip)
-    }
 
-    try {
-      const user = await db.collection('user').find(rest, options).toArray()
-      return res.send({ rest, options, user })
-    } catch (err) {
-      console.log(err)
-    }
+  const options = {
+    sort: handleQuerySort(sort), //localhost:3000/mongo/2?sort=_id:-1
+    limit: Number(limit),
+    skip: Number(skip)
   }
+
+  try {
+    const result = await db.collection(record).find(rest, options).toArray()
+    return res.send({ rest, options, result })
+  } catch (err) {
+    console.log(err)
+  }
+  // localhost:3000/api/db/record?name=user
 });
 
 apiRoute.post<{

@@ -6,11 +6,6 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "dev:all": "concurrently \"nodemon ./v1/api/index.ts\" \"vite\"",
-    "dev": "vite",
-    "build": "tsc && vite build",
-    "preview": "vite preview",
-    "dev:api": "nodemon ./v1/api/index.ts",
     "start": "vercel dev",
     "deploy": "vercel deploy --prod",
     "prisma:pull": "prisma db pull",

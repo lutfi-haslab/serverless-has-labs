@@ -4,6 +4,7 @@
   "main": "index.js",
   "author": "lutfi-haslab",
   "license": "MIT",
+  "type": "module",
   "scripts": {
     "dev:all": "concurrently \"nodemon ./v1/api/index.ts\" \"vite\"",
     "dev": "vite",
@@ -36,7 +37,10 @@
     "axios": "^1.3.2",
     "dotenv": "^16.0.3",
     "fastify": "^4.12.0",
+    "fastify-gundb": "^0.1.0",
+    "fastify-plugin": "^4.5.0",
     "fastify-socket.io": "^4.0.0",
+    "gun": "^0.2020.1239",
     "mongodb": "^4.13.0",
     "mongoose": "^6.9.0",
     "mqtt": "^4.3.7",

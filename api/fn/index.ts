@@ -100,6 +100,7 @@ apiRoute.get(async (req, res) => {
       (item) => item.id == Number(req.query.id) && item.method == "GET"
     );
     const dataSend = new AsyncFunction("req", "res", "prisma", "tiny", data[0].bodyFn);
+    
     await dataSend(req, res, prisma, tiny).then((data: any) => {
       return res.json(data);
     });

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import crypto from 'crypto'
 import fs from 'fs'
 
@@ -17,8 +18,8 @@ const keyPair = crypto.generateKeyPairSync('rsa', {
 // // Creating public and private key file 
 // fs.writeFileSync("public_key", keyPair.publicKey);
 // fs.writeFileSync("private_key", keyPair.privateKey);
-let privKey = process.env.PRIVATE_KEY;
-let pubKey = process.env.PUBLIC_KEY;
+// let privKey = process.env.PRIVATE_KEY;
+// let pubKey = process.env.PUBLIC_KEY;
 
 function encryptString(plaintext, publicKey) {
   const encrypted = crypto.publicEncrypt({
@@ -65,14 +66,14 @@ const plainText = JSON.stringify(json)
 
 // Defining algorithm
 const algorithm = 'aes-192-cbc';
-const password = process.env.PRIVATE_KEY;
-const key = crypto.scryptSync(password, process.env.PUBLIC_KEY, 24);
+const password = "test123";
+const key = crypto.scryptSync(password, "pub123", 24);
 const iv = Buffer.alloc(16, 0);
 
 // Creating cipher
-const cipher = crypto.createCipheriv(algorithm, key, iv);
+const cipher = crypto.createCipheriv(algorithm, key, iv); //encrypt
 const decipher =
-  crypto.createDecipheriv(algorithm, key, iv);
+  crypto.createDecipheriv(algorithm, key, iv); //decrypt
 
 let encrypted = '';
 let decrypted = '';
@@ -101,6 +102,7 @@ decipher.on('end', () => {
 
 cipher.write('halo');
 cipher.end();
+
 decipher.write(encrypted, 'base64');
 decipher.end();
 

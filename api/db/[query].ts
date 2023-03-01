@@ -7,7 +7,7 @@ const client = new MongoClient(url);
 const dbName = 'blockchain';
 const db = client.db(dbName);
 
-const handleQuerySort = (query: any) => {
+const queryHelper = (query: any) => {
   try {
     // convert the string to look like json object
     // example "id: -1, name: 1" to "{ "id": -1, "name": 1 }"
@@ -42,6 +42,19 @@ const apiRoute = nextConnect({
   },
 });
 
+apiRoute.post<{
+  query: {
+    record: string
+  }
+}>(async (req, res) => {
+  const { record } = req.query;
+  try {
+    const user = await db.collection(String(record)).insertOne(req.body)
+    return res.json(user)
+  } catch (err) {
+    console.log(err)
+  }
+});
 
 apiRoute.get<{
   query: {
@@ -52,33 +65,52 @@ apiRoute.get<{
   // localhost:3000/api/db/query?name=Lutfi&sort=_id:-1&limit=1&skip=1
 
   const options = {
-    sort: handleQuerySort(sort), //localhost:3000/mongo/2?sort=_id:-1
+    sort: queryHelper(sort), //localhost:3000/mongo/2?sort=_id:-1
     limit: Number(limit),
     skip: Number(skip)
   }
 
   try {
-    const result = await db.collection(String(record)).find(rest, options).toArray()
-    return res.send({ rest, options, result })
+    const result = await db.collection(String(record)).find({}, options).toArray()
+    return res.send({result, options})
   } catch (err) {
     console.log(err)
   }
   // localhost:3000/api/db/record?name=user
 });
 
-apiRoute.post<{
+apiRoute.put<{
   query: {
-    name: string
+    record: string
   }
 }>(async (req, res) => {
-  const { name } = req.query;
+  const { record, where } = req.query;
   try {
-    const user = await db.collection(name).insertOne(req.body)
-    return res.json(user)
+    const result = await db.collection(String(record)).updateOne(queryHelper(where), {$set: req.body})
+    return res.json(result)
   } catch (err) {
     console.log(err)
   }
 });
+
+apiRoute.delete<{
+  query: {
+    record: string
+    where: any
+  }
+}>(async (req, res) => {
+  const { record, where } = req.query;
+  try {
+    const result = await db.collection(String(record)).deleteOne(queryHelper(where))
+    return res.json(result)
+  } catch (err) {
+    console.log(err)
+  }
+});
+
+
+
+
 
 main()
 export default apiRoute;

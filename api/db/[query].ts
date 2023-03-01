@@ -58,7 +58,7 @@ apiRoute.get<{
   }
 
   try {
-    const result = await db.collection(record).find(rest, options).toArray()
+    const result = await db.collection(String(record)).find(rest, options).toArray()
     return res.send({ rest, options, result })
   } catch (err) {
     console.log(err)

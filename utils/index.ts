@@ -1,5 +1,5 @@
-import * as multer from "multer";
-import * as AWS from "aws-sdk";
+import multer from "multer";
+import AWS from "aws-sdk";
 import { VercelRequest, VercelResponse } from "@vercel/node";
 import nextConnect from 'next-connect';
 import cors from 'cors'

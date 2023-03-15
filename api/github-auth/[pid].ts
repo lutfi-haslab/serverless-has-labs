@@ -1,4 +1,5 @@
 import { VercelRequest, VercelResponse } from "@vercel/node";
+import { apiRoute } from '../../utils';
 import nextConnect from 'next-connect';
 import tiny from "tiny-json-http"
 const client_id = process.env.GITHUB_CLIENT_ID;
@@ -7,14 +8,6 @@ const authUrl = `https://github.com/login/oauth/authorize?client_id=${client_id}
 const tokenUrl = "https://github.com/login/oauth/access_token";
 
 
-const apiRoute = nextConnect({
-  onError(error, req: VercelRequest, res: VercelResponse) {
-    res.status(501).json({ error: `Sorry something Happened! ${error.message}` });
-  },
-  onNoMatch(req, res) {
-    res.status(405).json({ error: `Method '${req.method}' Not Allowed` });
-  },
-});
 
 apiRoute.get(async (req, res) => {
   switch (req.query.pid) {

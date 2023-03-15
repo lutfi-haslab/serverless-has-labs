@@ -1,7 +1,6 @@
 import { PrismaClient } from "@prisma/client";
-import { VercelRequest, VercelResponse } from "@vercel/node";
-import nextConnect from 'next-connect';
-import tiny from "tiny-json-http"
+import tiny from "tiny-json-http";
+import { apiRoute } from '../../utils';
 
 const prisma = new PrismaClient();
 
@@ -74,15 +73,6 @@ const dataJson: Data[] = [
   },
 ];
 
-
-const apiRoute = nextConnect({
-  onError(error, req: VercelRequest, res: VercelResponse) {
-    res.status(501).json({ error: `Sorry something Happened! ${error.message}` });
-  },
-  onNoMatch(req, res) {
-    res.status(405).json({ error: `Method '${req.method}' Not Allowed` });
-  },
-});
 
 apiRoute.get(async (req, res) => {
   try {

@@ -1,7 +1,6 @@
-import { VercelRequest, VercelResponse } from "@vercel/node";
-import nextConnect from 'next-connect';
-import crypto from "node:crypto";
-import { bucket, s3, upload } from '../../utils';
+import { VercelRequest } from "@vercel/node";
+import * as crypto from "node:crypto";
+import { apiRoute, bucket, s3, upload } from '../../utils';
 
 
 
@@ -13,14 +12,7 @@ export interface MulterFile {
   size: number
 }
 
-const apiRoute = nextConnect({
-  onError(error, req: VercelRequest, res: VercelResponse) {
-    res.status(501).json({ error: `Sorry something Happened! ${error.message}` });
-  },
-  onNoMatch(req, res) {
-    res.status(405).json({ error: `Method '${req.method}' Not Allowed` });
-  },
-});
+
 
 apiRoute.use(upload.single("file"));
 apiRoute.get((req, res) => {

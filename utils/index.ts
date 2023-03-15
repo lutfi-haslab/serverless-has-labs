@@ -1,5 +1,19 @@
-import multer from "multer";
-import AWS from "aws-sdk";
+import * as multer from "multer";
+import * as AWS from "aws-sdk";
+import { VercelRequest, VercelResponse } from "@vercel/node";
+import nextConnect from 'next-connect';
+import cors from 'cors'
+
+const apiRoute = nextConnect({
+  onError(error, req: VercelRequest, res: VercelResponse) {
+    res.status(501).json({ error: `Sorry something Happened! ${error.message}` });
+  },
+  onNoMatch(req, res) {
+    res.status(405).json({ error: `Method '${req.method}' Not Allowed` });
+  },
+});
+
+apiRoute.use(cors());
 
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
@@ -19,4 +33,5 @@ export {
   multipleUpload,
   s3,
   bucket,
+  apiRoute
 };
